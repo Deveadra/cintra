@@ -263,13 +263,15 @@ public sealed class NativeAudioCaptureSession(string helperPath) : IAudioCapture
     {
         acceptingAudio = false; lifetime.Cancel(); pipe?.Dispose();
         KillOwnedHelper();
+        Exception? terminationFailure = null;
         if (helper is not null)
         {
             try { await helper.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(2)).ConfigureAwait(false); }
-            catch (TimeoutException) { }
+            catch (TimeoutException error) { terminationFailure = error; }
             helper.Dispose(); helper = null;
         }
         if (reader is not null) await reader.ConfigureAwait(false);
+        if (terminationFailure is not null) throw new IOException("Owned native helper did not terminate within the cleanup deadline.", terminationFailure);
     }
 
     public async ValueTask DisposeAsync()

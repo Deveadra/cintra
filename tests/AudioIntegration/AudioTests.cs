@@ -20,6 +20,18 @@ public sealed class AudioTests
     private static CaptureSelection Selection => new(new(AudioStreamId.LocalMic, "Fake mic", "fake-device", null, false, false), new(AudioStreamId.RemoteApp, "Fake incoming", null, Environment.ProcessId, true, false));
     private static ClockMapping Clock => new(Stopwatch.GetTimestamp(), Stopwatch.Frequency, DateTimeOffset.UtcNow);
 
+    private static void AssertNoRunningHelpers()
+    {
+        // Windows may enumerate a terminated process while its kernel object is
+        // retained by an event wait/diagnostic handle. Assert execution state,
+        // and close every inspection handle rather than treating records as live.
+        foreach (var process in Process.GetProcessesByName("Cintra.Audio.FakeHelper"))
+        {
+            using (process)
+                Assert.True(process.HasExited, $"Capture helper PID {process.Id} is still running after cleanup.");
+        }
+    }
+
     [Fact]
     public async Task QueuePreservesIdentityAndReportsEachOverflow()
     {
@@ -111,7 +123,7 @@ public sealed class AudioTests
             await using var session = new NativeAudioCaptureSession(Fake);
             await session.StartAsync(Selection, Clock, CancellationToken.None);
             await Assert.ThrowsAsync<IOException>(() => session.StopAsync(CancellationToken.None));
-            Assert.Empty(Process.GetProcessesByName("Cintra.Audio.FakeHelper"));
+            AssertNoRunningHelpers();
         }
         finally { Environment.SetEnvironmentVariable("CINTRA_FAKE_HELPER_MODE", null); }
     }
@@ -127,7 +139,7 @@ public sealed class AudioTests
             await session.ResumeAsync(CancellationToken.None);
             await session.StopAsync(CancellationToken.None);
         }
-        Assert.Empty(Process.GetProcessesByName("Cintra.Audio.FakeHelper"));
+        AssertNoRunningHelpers();
     }
 
     [Fact]
@@ -137,6 +149,6 @@ public sealed class AudioTests
         await session.StartAsync(Selection, Clock, CancellationToken.None);
         using var cancellation = new CancellationTokenSource(); cancellation.Cancel();
         await Assert.ThrowsAsync<IOException>(() => session.StopAsync(cancellation.Token));
-        Assert.Empty(Process.GetProcessesByName("Cintra.Audio.FakeHelper"));
+        AssertNoRunningHelpers();
     }
 }
