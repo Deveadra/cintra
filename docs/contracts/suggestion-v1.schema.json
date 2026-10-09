@@ -1,0 +1,119 @@
+{
+  "type": "object",
+  "properties": {
+    "suggestion_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "kind": {
+      "enum": [
+        "suggested_reply",
+        "diagnostic_step",
+        "context_clarification",
+        "screenshot_analysis"
+      ]
+    },
+    "priority": {
+      "enum": [
+        "low",
+        "normal",
+        "high"
+      ]
+    },
+    "headline": {
+      "type": "string"
+    },
+    "body": {
+      "type": "string"
+    },
+    "commands": {
+      "type": "array",
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "risk": {
+            "enum": [
+              "read_only",
+              "modifying",
+              "unknown"
+            ]
+          },
+          "is_template": {
+            "type": "boolean"
+          },
+          "required_inputs": {
+            "type": "array",
+            "items": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "required": [
+          "text",
+          "risk",
+          "is_template",
+          "required_inputs"
+        ]
+      }
+    },
+    "what_to_look_for": {
+      "type": "array",
+      "items": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "confidence": {
+      "enum": [
+        "low",
+        "moderate",
+        "high"
+      ]
+    },
+    "evidence_event_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "expires_at_ms": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "suggestion_id",
+    "kind",
+    "priority",
+    "headline",
+    "body",
+    "commands",
+    "what_to_look_for",
+    "confidence",
+    "evidence_event_ids",
+    "assumptions",
+    "expires_at_ms"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:meeting-companion:suggestion-v1"
+}

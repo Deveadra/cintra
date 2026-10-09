@@ -1,0 +1,401 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "message_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "session_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "payload": {
+      "type": "object",
+      "required": [
+        "message_type"
+      ],
+      "anyOf": [
+        {
+          "properties": {
+            "message_type": {
+              "const": "start_capture"
+            },
+            "selection": {
+              "type": "object",
+              "properties": {
+                "microphone": {
+                  "type": "object",
+                  "properties": {
+                    "stream_id": {
+                      "enum": [
+                        "local_mic",
+                        "remote_app",
+                        "endpoint_fallback"
+                      ]
+                    },
+                    "display_name": {
+                      "type": "string"
+                    },
+                    "device_id": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "process_id": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "include_process_tree": {
+                      "type": "boolean"
+                    },
+                    "unisolated_acknowledged": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "stream_id",
+                    "display_name",
+                    "device_id",
+                    "process_id",
+                    "include_process_tree",
+                    "unisolated_acknowledged"
+                  ]
+                },
+                "incoming": {
+                  "type": "object",
+                  "properties": {
+                    "stream_id": {
+                      "enum": [
+                        "local_mic",
+                        "remote_app",
+                        "endpoint_fallback"
+                      ]
+                    },
+                    "display_name": {
+                      "type": "string"
+                    },
+                    "device_id": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "process_id": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "include_process_tree": {
+                      "type": "boolean"
+                    },
+                    "unisolated_acknowledged": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "stream_id",
+                    "display_name",
+                    "device_id",
+                    "process_id",
+                    "include_process_tree",
+                    "unisolated_acknowledged"
+                  ]
+                }
+              },
+              "required": [
+                "microphone",
+                "incoming"
+              ]
+            },
+            "clock": {
+              "type": "object",
+              "properties": {
+                "monotonic_origin_ticks": {
+                  "type": "integer"
+                },
+                "ticks_per_second": {
+                  "type": "integer"
+                },
+                "utc_origin": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "monotonic_origin_ticks",
+                "ticks_per_second",
+                "utc_origin"
+              ]
+            }
+          },
+          "required": [
+            "selection",
+            "clock"
+          ]
+        },
+        {
+          "properties": {
+            "message_type": {
+              "const": "capture_control"
+            },
+            "action": {
+              "enum": [
+                "pause",
+                "resume",
+                "stop"
+              ]
+            }
+          },
+          "required": [
+            "action"
+          ]
+        },
+        {
+          "properties": {
+            "message_type": {
+              "const": "audio_frame"
+            },
+            "stream_id": {
+              "enum": [
+                "local_mic",
+                "remote_app",
+                "endpoint_fallback"
+              ]
+            },
+            "sequence": {
+              "type": "integer"
+            },
+            "captured_start_ms": {
+              "type": "integer"
+            },
+            "captured_end_ms": {
+              "type": "integer"
+            },
+            "format": {
+              "type": "object",
+              "properties": {
+                "sample_rate": {
+                  "type": "integer"
+                },
+                "channels": {
+                  "type": "integer"
+                },
+                "bits_per_sample": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "sample_rate",
+                "channels",
+                "bits_per_sample"
+              ]
+            },
+            "source_sample_rate": {
+              "type": "integer"
+            },
+            "pcm": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "stream_id",
+            "sequence",
+            "captured_start_ms",
+            "captured_end_ms",
+            "format",
+            "source_sample_rate",
+            "pcm"
+          ]
+        },
+        {
+          "properties": {
+            "message_type": {
+              "const": "capture_health"
+            },
+            "stream_id": {
+              "enum": [
+                "local_mic",
+                "remote_app",
+                "endpoint_fallback"
+              ]
+            },
+            "health": {
+              "type": "object",
+              "properties": {
+                "component": {
+                  "enum": [
+                    "local_capture",
+                    "remote_capture",
+                    "local_stt",
+                    "remote_stt",
+                    "reasoning",
+                    "snapshot_send"
+                  ]
+                },
+                "status": {
+                  "enum": [
+                    "unknown",
+                    "starting",
+                    "healthy",
+                    "silence",
+                    "no_device",
+                    "wrong_process",
+                    "zero_level",
+                    "permission_denied",
+                    "disconnected",
+                    "reconnecting",
+                    "failed",
+                    "stopped"
+                  ]
+                },
+                "observed_at_ms": {
+                  "type": "integer"
+                },
+                "diagnostic_code": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "component",
+                "status",
+                "observed_at_ms",
+                "diagnostic_code"
+              ]
+            },
+            "peak": {
+              "type": "number"
+            },
+            "dropped_frames": {
+              "type": "integer"
+            },
+            "oldest_frame_age_ms": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "stream_id",
+            "health",
+            "peak",
+            "dropped_frames",
+            "oldest_frame_age_ms"
+          ]
+        },
+        {
+          "properties": {
+            "message_type": {
+              "const": "capture_gap"
+            },
+            "stream_id": {
+              "enum": [
+                "local_mic",
+                "remote_app",
+                "endpoint_fallback"
+              ]
+            },
+            "captured_start_ms": {
+              "type": "integer"
+            },
+            "captured_end_ms": {
+              "type": "integer"
+            },
+            "reason": {
+              "enum": [
+                "queue_overflow",
+                "device_lost",
+                "source_changed",
+                "helper_exited",
+                "network_lost",
+                "paused",
+                "unknown"
+              ]
+            },
+            "dropped_frames": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "stream_id",
+            "captured_start_ms",
+            "captured_end_ms",
+            "reason",
+            "dropped_frames"
+          ]
+        },
+        {
+          "properties": {
+            "message_type": {
+              "const": "capture_source_changed"
+            },
+            "source": {
+              "type": "object",
+              "properties": {
+                "stream_id": {
+                  "enum": [
+                    "local_mic",
+                    "remote_app",
+                    "endpoint_fallback"
+                  ]
+                },
+                "display_name": {
+                  "type": "string"
+                },
+                "device_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "process_id": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "include_process_tree": {
+                  "type": "boolean"
+                },
+                "unisolated_acknowledged": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "stream_id",
+                "display_name",
+                "device_id",
+                "process_id",
+                "include_process_tree",
+                "unisolated_acknowledged"
+              ]
+            },
+            "effective_at_ms": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "source",
+            "effective_at_ms"
+          ]
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "message_id",
+    "session_id",
+    "payload"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:meeting-companion:ipc-v1"
+}

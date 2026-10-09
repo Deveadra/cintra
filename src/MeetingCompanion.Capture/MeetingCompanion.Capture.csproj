@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../MeetingCompanion.Contracts/MeetingCompanion.Contracts.csproj" />
+  </ItemGroup>
+</Project>

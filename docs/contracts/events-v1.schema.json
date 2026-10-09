@@ -1,0 +1,723 @@
+{
+  "type": "object",
+  "required": [
+    "event_type"
+  ],
+  "anyOf": [
+    {
+      "properties": {
+        "event_type": {
+          "const": "transcript_partial"
+        },
+        "stream_id": {
+          "enum": [
+            "local_mic",
+            "remote_app",
+            "endpoint_fallback"
+          ]
+        },
+        "turn_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "provider_item_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "captured_start_ms": {
+          "type": "integer"
+        },
+        "captured_end_ms": {
+          "type": "integer"
+        },
+        "text": {
+          "type": "string"
+        },
+        "attribution": {
+          "enum": [
+            "YOU",
+            "REMOTE",
+            "MIXED",
+            "UNKNOWN"
+          ]
+        },
+        "attribution_confidence": {
+          "enum": [
+            "source_confirmed",
+            "inferred",
+            "unknown"
+          ]
+        },
+        "confidence_note": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "event_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "session_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "received_utc": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "stream_id",
+        "turn_id",
+        "provider_item_id",
+        "captured_start_ms",
+        "captured_end_ms",
+        "text",
+        "attribution",
+        "attribution_confidence",
+        "confidence_note",
+        "schema_version",
+        "event_id",
+        "session_id",
+        "received_utc"
+      ]
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "transcript_final"
+        },
+        "stream_id": {
+          "enum": [
+            "local_mic",
+            "remote_app",
+            "endpoint_fallback"
+          ]
+        },
+        "turn_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "provider_item_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "captured_start_ms": {
+          "type": "integer"
+        },
+        "captured_end_ms": {
+          "type": "integer"
+        },
+        "text": {
+          "type": "string"
+        },
+        "attribution": {
+          "enum": [
+            "YOU",
+            "REMOTE",
+            "MIXED",
+            "UNKNOWN"
+          ]
+        },
+        "attribution_confidence": {
+          "enum": [
+            "source_confirmed",
+            "inferred",
+            "unknown"
+          ]
+        },
+        "confidence_note": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "event_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "session_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "received_utc": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "stream_id",
+        "turn_id",
+        "provider_item_id",
+        "captured_start_ms",
+        "captured_end_ms",
+        "text",
+        "attribution",
+        "attribution_confidence",
+        "confidence_note",
+        "schema_version",
+        "event_id",
+        "session_id",
+        "received_utc"
+      ]
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "audio_gap"
+        },
+        "gap": {
+          "type": "object",
+          "properties": {
+            "stream_id": {
+              "enum": [
+                "local_mic",
+                "remote_app",
+                "endpoint_fallback"
+              ]
+            },
+            "captured_start_ms": {
+              "type": "integer"
+            },
+            "captured_end_ms": {
+              "type": "integer"
+            },
+            "reason": {
+              "enum": [
+                "queue_overflow",
+                "device_lost",
+                "source_changed",
+                "helper_exited",
+                "network_lost",
+                "paused",
+                "unknown"
+              ]
+            },
+            "dropped_frames": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "stream_id",
+            "captured_start_ms",
+            "captured_end_ms",
+            "reason",
+            "dropped_frames"
+          ]
+        },
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "event_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "session_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "received_utc": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "gap",
+        "schema_version",
+        "event_id",
+        "session_id",
+        "received_utc"
+      ]
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "source_changed"
+        },
+        "change": {
+          "type": "object",
+          "properties": {
+            "source": {
+              "type": "object",
+              "properties": {
+                "stream_id": {
+                  "enum": [
+                    "local_mic",
+                    "remote_app",
+                    "endpoint_fallback"
+                  ]
+                },
+                "display_name": {
+                  "type": "string"
+                },
+                "device_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "process_id": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "include_process_tree": {
+                  "type": "boolean"
+                },
+                "unisolated_acknowledged": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "stream_id",
+                "display_name",
+                "device_id",
+                "process_id",
+                "include_process_tree",
+                "unisolated_acknowledged"
+              ]
+            },
+            "effective_at_ms": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "source",
+            "effective_at_ms"
+          ]
+        },
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "event_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "session_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "received_utc": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "change",
+        "schema_version",
+        "event_id",
+        "session_id",
+        "received_utc"
+      ]
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "snapshot_added"
+        },
+        "snapshot": {
+          "type": "object",
+          "properties": {
+            "snapshot_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "captured_at_ms": {
+              "type": "integer"
+            },
+            "source": {
+              "enum": [
+                "foreground_window",
+                "selected_window",
+                "region",
+                "display"
+              ]
+            },
+            "source_label": {
+              "type": "string"
+            },
+            "crop": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "properties": {
+                "x": {
+                  "type": "integer"
+                },
+                "y": {
+                  "type": "integer"
+                },
+                "width": {
+                  "type": "integer"
+                },
+                "height": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "x",
+                "y",
+                "width",
+                "height"
+              ]
+            },
+            "width": {
+              "type": "integer"
+            },
+            "height": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "snapshot_id",
+            "captured_at_ms",
+            "source",
+            "source_label",
+            "crop",
+            "width",
+            "height"
+          ]
+        },
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "event_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "session_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "received_utc": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "snapshot",
+        "schema_version",
+        "event_id",
+        "session_id",
+        "received_utc"
+      ]
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "trigger_detected"
+        },
+        "trigger_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "kind": {
+          "enum": [
+            "direct_question",
+            "technical_blocker",
+            "request_for_solution",
+            "specific_error",
+            "snapshot_requested",
+            "manual_ask"
+          ]
+        },
+        "evidence_event_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "event_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "session_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "received_utc": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "trigger_id",
+        "kind",
+        "evidence_event_ids",
+        "schema_version",
+        "event_id",
+        "session_id",
+        "received_utc"
+      ]
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "suggestion_generated"
+        },
+        "suggestion": {
+          "type": "object",
+          "properties": {
+            "suggestion_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "kind": {
+              "enum": [
+                "suggested_reply",
+                "diagnostic_step",
+                "context_clarification",
+                "screenshot_analysis"
+              ]
+            },
+            "priority": {
+              "enum": [
+                "low",
+                "normal",
+                "high"
+              ]
+            },
+            "headline": {
+              "type": "string"
+            },
+            "body": {
+              "type": "string"
+            },
+            "commands": {
+              "type": "array",
+              "items": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "risk": {
+                    "enum": [
+                      "read_only",
+                      "modifying",
+                      "unknown"
+                    ]
+                  },
+                  "is_template": {
+                    "type": "boolean"
+                  },
+                  "required_inputs": {
+                    "type": "array",
+                    "items": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "text",
+                  "risk",
+                  "is_template",
+                  "required_inputs"
+                ]
+              }
+            },
+            "what_to_look_for": {
+              "type": "array",
+              "items": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "confidence": {
+              "enum": [
+                "low",
+                "moderate",
+                "high"
+              ]
+            },
+            "evidence_event_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "expires_at_ms": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "suggestion_id",
+            "kind",
+            "priority",
+            "headline",
+            "body",
+            "commands",
+            "what_to_look_for",
+            "confidence",
+            "evidence_event_ids",
+            "assumptions",
+            "expires_at_ms"
+          ]
+        },
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "event_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "session_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "received_utc": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "suggestion",
+        "schema_version",
+        "event_id",
+        "session_id",
+        "received_utc"
+      ]
+    },
+    {
+      "properties": {
+        "event_type": {
+          "const": "session_state"
+        },
+        "state": {
+          "enum": [
+            "stopped",
+            "selecting_source",
+            "ready",
+            "starting",
+            "listening",
+            "degraded",
+            "recovering",
+            "paused",
+            "stopping",
+            "error"
+          ]
+        },
+        "health": {
+          "type": "array",
+          "items": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "component": {
+                "enum": [
+                  "local_capture",
+                  "remote_capture",
+                  "local_stt",
+                  "remote_stt",
+                  "reasoning",
+                  "snapshot_send"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "unknown",
+                  "starting",
+                  "healthy",
+                  "silence",
+                  "no_device",
+                  "wrong_process",
+                  "zero_level",
+                  "permission_denied",
+                  "disconnected",
+                  "reconnecting",
+                  "failed",
+                  "stopped"
+                ]
+              },
+              "observed_at_ms": {
+                "type": "integer"
+              },
+              "diagnostic_code": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "component",
+              "status",
+              "observed_at_ms",
+              "diagnostic_code"
+            ]
+          }
+        },
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "event_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "session_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "received_utc": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "state",
+        "health",
+        "schema_version",
+        "event_id",
+        "session_id",
+        "received_utc"
+      ]
+    }
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:meeting-companion:events-v1"
+}

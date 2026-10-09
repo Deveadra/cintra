@@ -1,0 +1,42 @@
+name: Managed Windows foundation
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  windows-offline:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Inspect environment
+        shell: pwsh
+        run: ./scripts/check-environment.ps1
+      - name: Build managed solution including x64 WPF
+        shell: pwsh
+        run: ./scripts/build.ps1
+      - name: Check formatting
+        run: dotnet format MeetingCompanion.slnx --verify-no-changes --no-restore
+      - name: Offline unit, contract and synthetic replay tests
+        shell: pwsh
+        run: ./scripts/test.ps1
+      - name: Verify frozen schemas
+        shell: pwsh
+        run: |
+          dotnet run --project tests/PlaybackHarness -c Release --no-build --no-restore -- --export-schemas docs/contracts
+          if ($LASTEXITCODE -ne 0) { throw 'Schema export failed.' }
+          git diff --exit-code -- docs/contracts
+          if ($LASTEXITCODE -ne 0) { throw 'Contract schema drift: review version compatibility.' }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: offline-test-results
+          path: TestResults/*.trx
+          if-no-files-found: warn

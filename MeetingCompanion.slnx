@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MeetingCompanion.Ai/MeetingCompanion.Ai.csproj" />
+    <Project Path="src/MeetingCompanion.Audio/MeetingCompanion.Audio.csproj" />
+    <Project Path="src/MeetingCompanion.Capture/MeetingCompanion.Capture.csproj" />
+    <Project Path="src/MeetingCompanion.Contracts/MeetingCompanion.Contracts.csproj" />
+    <Project Path="src/MeetingCompanion.Core/MeetingCompanion.Core.csproj" />
+    <Project Path="src/MeetingCompanion.Desktop/MeetingCompanion.Desktop.csproj" />
+    <Project Path="src/MeetingCompanion.Platform/MeetingCompanion.Platform.csproj" />
+    <Project Path="src/MeetingCompanion.Stt/MeetingCompanion.Stt.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/Contract/">
+    <Project Path="tests/Contract/MeetingCompanion.Contract.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/PlaybackHarness/">
+    <Project Path="tests/PlaybackHarness/MeetingCompanion.PlaybackHarness.csproj" />
+  </Folder>
+  <Folder Name="/tests/Unit/">
+    <Project Path="tests/Unit/MeetingCompanion.Unit.Tests.csproj" />
+  </Folder>
+</Solution>
