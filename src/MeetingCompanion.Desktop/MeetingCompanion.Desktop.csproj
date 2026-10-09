@@ -4,8 +4,10 @@
     <OutputType>WinExe</OutputType>
     <UseWPF>true</UseWPF>
     <PlatformTarget>x64</PlatformTarget>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../MeetingCompanion.Core/MeetingCompanion.Core.csproj" />
+    <ProjectReference Include="../MeetingCompanion.Capture/MeetingCompanion.Capture.csproj" />
   </ItemGroup>
 </Project>
