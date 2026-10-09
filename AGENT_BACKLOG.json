@@ -1,0 +1,371 @@
+{
+  "schema_version": 1,
+  "project": "Real-Time Meeting Companion",
+  "generated_date": "2026-10-09",
+  "planning_only": true,
+  "authoritative_spec": "IMPLEMENTATION_PLAN.md",
+  "tasks": [
+    {
+      "id": "MC-001",
+      "title": "Foundation solution, CI and typed contracts",
+      "priority": "P0",
+      "owner_role": "Architect/Contracts",
+      "depends_on": [],
+      "suggested_paths": [
+        "src/MeetingCompanion.Contracts",
+        "src/MeetingCompanion.Core",
+        ".github/workflows",
+        "scripts"
+      ],
+      "acceptance_criteria": [
+        "Clean Windows build",
+        "Offline tests green",
+        "IPC/event schemas versioned"
+      ],
+      "status": "not_started",
+      "status_evidence": null
+    },
+    {
+      "id": "MC-002",
+      "title": "Windows audio and call-app environment probe",
+      "priority": "P0",
+      "owner_role": "Platform/QA",
+      "depends_on": [
+        "MC-001"
+      ],
+      "suggested_paths": [
+        "src/MeetingCompanion.Platform",
+        "docs/test-matrix.md"
+      ],
+      "acceptance_criteria": [
+        "Report Windows build, devices and active sessions",
+        "Observe Zoom and Teams candidate audio process trees",
+        "Explicit unsupported cases"
+      ],
+      "status": "not_started",
+      "status_evidence": null
+    },
+    {
+      "id": "MC-003",
+      "title": "Native WASAPI microphone capture",
+      "priority": "P0",
+      "owner_role": "Native Windows Audio",
+      "depends_on": [
+        "MC-001"
+      ],
+      "suggested_paths": [
+        "src/MeetingCompanion.Native",
+        "src/MeetingCompanion.Audio"
+      ],
+      "acceptance_criteria": [
+        "Timestamped mic audio visible",
+        "Start/stop repeatable",
+        "Device loss and no handles remaining"
+      ],
+      "status": "not_started",
+      "status_evidence": null
+    },
+    {
+      "id": "MC-004",
+      "title": "Process-tree incoming audio loopback",
+      "priority": "P0",
+      "owner_role": "Native Windows Audio",
+      "depends_on": [
+        "MC-001",
+        "MC-002"
+      ],
+      "suggested_paths": [
+        "src/MeetingCompanion.Native",
+        "src/MeetingCompanion.Audio"
+      ],
+      "acceptance_criteria": [
+        "Actually hear Zoom incoming call",
+        "Actually hear Teams incoming call",
+        "Unrelated app audio excluded or limitation labeled"
+      ],
+      "status": "not_started",
+      "status_evidence": null
+    },
+    {
+      "id": "MC-005",
+      "title": "Two-stream conversion, IPC, recovery",
+      "priority": "P0",
+      "owner_role": "Native Windows Audio",
+      "depends_on": [
+        "MC-003",
+        "MC-004"
+      ],
+      "suggested_paths": [
+        "src/MeetingCompanion.Audio",
+        "src/MeetingCompanion.Native",
+        "src/MeetingCompanion.Contracts"
+      ],
+      "acceptance_criteria": [
+        "Mic and remote streams stay independent",
+        "24k PCM16 frames, monotonic sync",
+        "Pause/stop and helper crash correctly handled"
+      ],
+      "status": "not_started",
+      "status_evidence": null
+    },
+    {
+      "id": "MC-006",
+      "title": "Two live STT connections and local VAD",
+      "priority": "P0",
+      "owner_role": "STT/Event Pipeline",
+      "depends_on": [
+        "MC-005"
+      ],
+      "suggested_paths": [
+        "src/MeetingCompanion.Stt"
+      ],
+      "acceptance_criteria": [
+        "Two independent STT sessions",
+        "partial and final event mapping",
+        "commit once per VAD turn",
+        "Reconnection marks gaps"
+      ],
+      "status": "not_started",
+      "status_evidence": null
+    },
+    {
+      "id": "MC-007",
+      "title": "Rolling conversation and issue state",
+      "priority": "P0",
+      "owner_role": "STT/Event Pipeline",
+      "depends_on": [
+        "MC-001",
+        "MC-006"
+      ],
+      "suggested_paths": [
+        "src/MeetingCompanion.Core"
+      ],
+      "acceptance_criteria": [
+        "Out-of-order finals deterministic",
+        "Evidence-based issue state",
+        "bounded memory and no default archive"
+      ],
+      "status": "not_started",
+      "status_evidence": null
+    },
+    {
+      "id": "MC-008",
+      "title": "Manual window/region snapshot and hotkey",
+      "priority": "P0",
+      "owner_role": "Snapshot/Vision",
+      "depends_on": [
+        "MC-001"
+      ],
+      "suggested_paths": [
+        "src/MeetingCompanion.Capture",
+        "src/MeetingCompanion.Desktop"
+      ],
+      "acceptance_criteria": [
+        "Captures intended window without overlay",
+        "Works with multi-monitor DPI",
+        "No automatic screenshots"
+      ],
+      "status": "not_started",
+      "status_evidence": null
+    },
+    {
+      "id": "MC-009",
+      "title": "Snapshot image plus transcript vision bridge",
+      "priority": "P0",
+      "owner_role": "Snapshot/Vision",
+      "depends_on": [
+        "MC-007",
+        "MC-008"
+      ],
+      "suggested_paths": [
+        "src/MeetingCompanion.Ai",
+        "src/MeetingCompanion.Capture"
+      ],
+      "acceptance_criteria": [
+        "Time-correlated transcript and image",
+        "Vision model verified",
+        "Failure does not break STT"
+      ],
+      "status": "not_started",
+      "status_evidence": null
+    },
+    {
+      "id": "MC-010",
+      "title": "Question/technical-blocker triggers",
+      "priority": "P1",
+      "owner_role": "Reasoning/Quality",
+      "depends_on": [
+        "MC-007"
+      ],
+      "suggested_paths": [
+        "src/MeetingCompanion.Core",
+        "tests/Fixtures"
+      ],
+      "acceptance_criteria": [
+        "No duplicate partial-trigger cards",
+        "Classifies question vs general chat",
+        "Evaluation metrics reported"
+      ],
+      "status": "not_started",
+      "status_evidence": null
+    },
+    {
+      "id": "MC-011",
+      "title": "Structured grounded reply/command generation",
+      "priority": "P1",
+      "owner_role": "Reasoning/Quality",
+      "depends_on": [
+        "MC-007",
+        "MC-010"
+      ],
+      "suggested_paths": [
+        "src/MeetingCompanion.Ai",
+        "tests/Fixtures"
+      ],
+      "acceptance_criteria": [
+        "Schema-validated model output",
+        "No invented evidence or concrete identifiers",
+        "Auto suggestions read-only"
+      ],
+      "status": "not_started",
+      "status_evidence": null
+    },
+    {
+      "id": "MC-012",
+      "title": "Overlay, tray, source controls and state UI",
+      "priority": "P0",
+      "owner_role": "Desktop UX",
+      "depends_on": [
+        "MC-001",
+        "MC-005",
+        "MC-008"
+      ],
+      "suggested_paths": [
+        "src/MeetingCompanion.Desktop"
+      ],
+      "acceptance_criteria": [
+        "True per-source health displayed",
+        "Hotkey, snapshot and copy work",
+        "Pause and stop release capture"
+      ],
+      "status": "not_started",
+      "status_evidence": null
+    },
+    {
+      "id": "MC-013",
+      "title": "Zoom meeting/direct-call adapter acceptance",
+      "priority": "P0",
+      "owner_role": "Platform/QA",
+      "depends_on": [
+        "MC-002",
+        "MC-004",
+        "MC-005",
+        "MC-012"
+      ],
+      "suggested_paths": [
+        "src/MeetingCompanion.Platform",
+        "tests/WindowsE2E"
+      ],
+      "acceptance_criteria": [
+        "Real Zoom meeting passes",
+        "Real unscheduled Zoom direct call passes",
+        "Device switching/restart evidence attached"
+      ],
+      "status": "not_started",
+      "status_evidence": null
+    },
+    {
+      "id": "MC-014",
+      "title": "Teams meeting/direct-call adapter acceptance",
+      "priority": "P0",
+      "owner_role": "Platform/QA",
+      "depends_on": [
+        "MC-002",
+        "MC-004",
+        "MC-005",
+        "MC-012"
+      ],
+      "suggested_paths": [
+        "src/MeetingCompanion.Platform",
+        "tests/WindowsE2E"
+      ],
+      "acceptance_criteria": [
+        "Real Teams meeting passes",
+        "Real Teams direct call passes",
+        "Renderer topology/restart evidence attached"
+      ],
+      "status": "not_started",
+      "status_evidence": null
+    },
+    {
+      "id": "MC-015",
+      "title": "Generic call-app and browser fallback",
+      "priority": "P1",
+      "owner_role": "Platform/QA",
+      "depends_on": [
+        "MC-002",
+        "MC-005",
+        "MC-012"
+      ],
+      "suggested_paths": [
+        "src/MeetingCompanion.Platform",
+        "tests/WindowsE2E"
+      ],
+      "acceptance_criteria": [
+        "Manual source picker works",
+        "Endpoint fallback clearly unisolated",
+        "Browser process restrictions documented"
+      ],
+      "status": "not_started",
+      "status_evidence": null
+    },
+    {
+      "id": "MC-016",
+      "title": "Observability, budgets and fault injection",
+      "priority": "P0",
+      "owner_role": "Platform/QA",
+      "depends_on": [
+        "MC-006",
+        "MC-009",
+        "MC-011",
+        "MC-013",
+        "MC-014"
+      ],
+      "suggested_paths": [
+        "tests/Integration",
+        "docs/runbooks"
+      ],
+      "acceptance_criteria": [
+        "Latency and spend benchmark",
+        "Bounded retries and queue",
+        "Crash/device failure without false green"
+      ],
+      "status": "not_started",
+      "status_evidence": null
+    },
+    {
+      "id": "MC-017",
+      "title": "Release gates, packaging and regression",
+      "priority": "P0",
+      "owner_role": "Platform/QA",
+      "depends_on": [
+        "MC-013",
+        "MC-014",
+        "MC-015",
+        "MC-016"
+      ],
+      "suggested_paths": [
+        "tests/WindowsE2E",
+        "scripts",
+        ".github/workflows"
+      ],
+      "acceptance_criteria": [
+        "Fresh Windows install smoke test",
+        "All release-blocking checklist gates verified",
+        "No regression or capture leak"
+      ],
+      "status": "not_started",
+      "status_evidence": null
+    }
+  ]
+}
