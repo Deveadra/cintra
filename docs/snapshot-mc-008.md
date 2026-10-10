@@ -20,7 +20,7 @@ The foreground hook remembers the external HWND before the shell takes focus; th
 
 Drag a region on the selected monitor; Esc or Cancel cancels. The PerMonitorV2 manifest and PointToScreen convert selection into physical pixels. Crop metadata uses monitor-relative physical pixel coordinates, not WPF DIPs; negative desktop origins are normalized by RegionGeometry. A region spans one selected monitor; cross-monitor stitched regions are intentionally unsupported. Changed display geometry requires refreshing/reselecting.
 
-Preview and PNG bytes remain in memory until cleared, replaced, or the shell exits. Starting a request clears the old preview, so cancellation/error cannot present stale pixels as a success. There is no screenshot file writer, provider upload, AI vision call, scheduled screenshot, or background pixel capture. Source/window titles appear only in the UI/result and are bounded to 256 characters. Frame SystemRelativeTime supplies QPC-based captured-at time relative to the supplied ClockMapping.
+Preview and PNG bytes contain only the selected pixels and remain in memory until cleared, replaced, or the shell exits. The raw frame buffer is cleared after processing, including failure/cancellation; the cropped preview does not retain the full monitor bitmap. Starting a request clears the old preview, so cancellation/error cannot present stale pixels as a success. There is no screenshot file writer, provider upload, AI vision call, scheduled screenshot, or background pixel capture. Source/window titles appear only in the UI/result and are bounded to 256 characters. Frame SystemRelativeTime supplies QPC-based captured-at time relative to the supplied ClockMapping.
 
 ## Reproducible validation
 
@@ -78,6 +78,10 @@ Place the second monitor left and above primary, use 100% and 150%/200% scaling,
 - `./scripts/build.ps1`: PASS, Release build, 0 warnings / 0 errors (native snapshot compiler also uses /W4 /WX).
 - `./scripts/native-build.ps1`: PASS, accepted audio helper built; native-audio-offline and native-audio-lifetime both passed (2/2).
 - `dotnet format MeetingCompanion.slnx --verify-no-changes --no-restore`: exit 0.
-- `./scripts/test.ps1`: PASS, 78 tests total: 23 unit, 27 contract, 11 audio, 17 capture; 0 failed, 0 skipped. Offline synthetic playback result PASS.
+- `./scripts/test.ps1`: PASS, 79 tests total: 23 unit, 27 contract, 11 audio, 18 capture; 0 failed, 0 skipped. Offline synthetic playback result PASS.
 - Schema export and `git diff --exit-code -- docs/contracts`: exit 0; frozen schemas unchanged.
 - `dotnet run --project tests/CaptureWindows -c Release --no-build -- --smoke`: WINDOWS_SMOKE_PASS checks=25 at OS 10.0.26200.0, monitors=1, DPI=120. Actual synthetic pixels captured; no screenshot files written.
+
+On 2026-10-10, the final crop-memory change was revalidated: the preview owns only cropped pixels, raw frame clearing is tested, and the Windows smoke harness again passed all 25 checks at 120 DPI. One full regression run transiently failed the unchanged audio test CancelledStopStillReleasesOwnedHelper (reported PID 29248). The PID was absent during subsequent inspection; that test passed in isolation. No audio source/test files were changed. The full-suite repeat result is included below and in the PR.
+
+Full-suite repeat on 2026-10-10: PASS, 79/79 (23 unit, 27 contract, 11 audio, 18 capture), zero skipped; synthetic replay PASS. Final formatting verification exit 0. This retry does not establish a root cause for the earlier audio cleanup failure.

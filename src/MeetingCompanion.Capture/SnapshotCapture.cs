@@ -8,6 +8,7 @@ using MeetingCompanion.Contracts;
 namespace MeetingCompanion.Capture;
 
 public sealed record SnapshotTarget(SnapshotSource Source, nint Handle, string Label, PixelRegion? Crop = null);
+/// <summary>Ownership of Bgra transfers to SnapshotCapture, which clears it after processing.</summary>
 public sealed record CapturedPixels(byte[] Bgra, int Width, int Height, long QpcTicks);
 public sealed record SnapshotResult(SnapshotMetadata Metadata, byte[] Png, BitmapSource Preview);
 public interface ISnapshotBackend
@@ -30,6 +31,7 @@ public sealed class SnapshotCapture(ISnapshotBackend backend, ClockMapping clock
         clock.Validate();
         if (Interlocked.CompareExchange(ref busy, 1, 0) != 0)
             throw new SnapshotFailure("busy", "A snapshot is already in progress.");
+        CapturedPixels? pixels = null;
         try
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -37,7 +39,7 @@ public sealed class SnapshotCapture(ISnapshotBackend backend, ClockMapping clock
                 throw new SnapshotFailure("invalid_source", "Choose a valid window or monitor.");
             if (target.Source == SnapshotSource.Region && target.Crop is null)
                 throw new SnapshotFailure("invalid_region", "Select a rectangular region.");
-            var pixels = await backend.CaptureAsync(target, cancellationToken).ConfigureAwait(false);
+            pixels = await backend.CaptureAsync(target, cancellationToken).ConfigureAwait(false);
             cancellationToken.ThrowIfCancellationRequested();
             if (pixels.Width is <= 0 or > 16384 || pixels.Height is <= 0 or > 16384 ||
                 (long)pixels.Width * pixels.Height > 33_554_432 || pixels.Bgra.LongLength != (long)pixels.Width * pixels.Height * 4)
@@ -46,15 +48,15 @@ public sealed class SnapshotCapture(ISnapshotBackend backend, ClockMapping clock
             if (crop.X < 0 || crop.Y < 0 || crop.Width <= 0 || crop.Height <= 0 ||
                 (long)crop.X + crop.Width > pixels.Width || (long)crop.Y + crop.Height > pixels.Height)
                 throw new SnapshotFailure("invalid_region", "The source moved or resized. Select the region again.");
-            var bitmap = BitmapSource.Create(pixels.Width, pixels.Height, 96, 96, PixelFormats.Bgra32, null, pixels.Bgra, pixels.Width * 4);
-            BitmapSource image = new CroppedBitmap(bitmap, new System.Windows.Int32Rect(crop.X, crop.Y, crop.Width, crop.Height));
-            image.Freeze();
             var cropped = new byte[checked(crop.Width * crop.Height * 4)];
-            image.CopyPixels(cropped, crop.Width * 4, 0);
+            for (int row = 0; row < crop.Height; row++)
+                Buffer.BlockCopy(pixels.Bgra, ((crop.Y + row) * pixels.Width + crop.X) * 4, cropped, row * crop.Width * 4, crop.Width * 4);
             bool visible = false;
             for (int i = 0; i < cropped.Length; i += 4)
                 if (cropped[i] > 3 || cropped[i + 1] > 3 || cropped[i + 2] > 3) { visible = true; break; }
             if (!visible) throw new SnapshotFailure("blank_frame", "The image is blank or protected. Choose another source and retry.");
+            var image = BitmapSource.Create(crop.Width, crop.Height, 96, 96, PixelFormats.Bgra32, null, cropped, crop.Width * 4);
+            image.Freeze();
             var encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(image));
             using var stream = new MemoryStream();
@@ -66,7 +68,7 @@ public sealed class SnapshotCapture(ISnapshotBackend backend, ClockMapping clock
             cancellationToken.ThrowIfCancellationRequested();
             return new(metadata, stream.ToArray(), image);
         }
-        finally { Volatile.Write(ref busy, 0); }
+        finally { if (pixels != null) Array.Clear(pixels.Bgra); Volatile.Write(ref busy, 0); }
     }
 
     public static ClockMapping NewClock() => new(Stopwatch.GetTimestamp(), Stopwatch.Frequency, DateTimeOffset.UtcNow);

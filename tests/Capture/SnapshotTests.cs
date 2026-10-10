@@ -25,6 +25,20 @@ public sealed class SnapshotTests
     private static SnapshotTarget Target(PixelRegion? crop = null) => new(crop == null ? SnapshotSource.SelectedWindow : SnapshotSource.Region, 1, "Fixture", crop);
 
     [Fact]
+    public async Task CropOwnsOnlySelectedPixelsAndClearsRawFrame()
+    {
+        var raw = Enumerable.Range(1, 64).Select(x => (byte)x).ToArray();
+        var expected = raw[20..28].Concat(raw[36..44]).ToArray();
+        var backend = new FakeBackend { Read = _ => Task.FromResult(new CapturedPixels(raw, 4, 4, Stopwatch.GetTimestamp())) };
+        var result = await new SnapshotCapture(backend, SnapshotCapture.NewClock()).CaptureAsync(Target(new(1, 1, 2, 2)), default);
+        var actual = new byte[16];
+        result.Preview.CopyPixels(actual, 8, 0);
+        Assert.Equal(expected, actual);
+        Assert.All(raw, value => Assert.Equal(0, value));
+        Assert.IsNotType<System.Windows.Media.Imaging.CroppedBitmap>(result.Preview);
+    }
+
+    [Fact]
     public async Task EncodesPngWithValidatedFrozenMetadata()
     {
         var result = await new SnapshotCapture(new FakeBackend(), SnapshotCapture.NewClock()).CaptureAsync(Target(new(1, 1, 2, 3)), default);
