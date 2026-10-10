@@ -15,6 +15,12 @@
     <Project Path="tests/AudioFakeHelper/Cintra.Audio.FakeHelper.csproj" />
     <Project Path="tests/AudioHarness/Cintra.Audio.Harness.csproj" />
   </Folder>
+  <Folder Name="/tests/Capture/">
+    <Project Path="tests/Capture/MeetingCompanion.Capture.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/CaptureWindows/">
+    <Project Path="tests/CaptureWindows/MeetingCompanion.Capture.Windows.csproj" />
+  </Folder>
   <Folder Name="/tests/Contract/">
     <Project Path="tests/Contract/MeetingCompanion.Contract.Tests.csproj" />
   </Folder>
