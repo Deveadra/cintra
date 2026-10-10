@@ -8,8 +8,14 @@
     <Project Path="src/MeetingCompanion.Desktop/MeetingCompanion.Desktop.csproj" />
     <Project Path="src/MeetingCompanion.Platform/MeetingCompanion.Platform.csproj" />
     <Project Path="src/MeetingCompanion.Stt/MeetingCompanion.Stt.csproj" />
+    <Project Path="src/MeetingCompanion.Session/MeetingCompanion.Session.csproj" />
   </Folder>
   <Folder Name="/tests/" />
+  <Folder Name="/tests/Session/">
+    <Project Path="tests/Session/MeetingCompanion.Session.Tests.csproj" />
+    <Project Path="tests/SessionWindows/MeetingCompanion.Session.Windows.csproj" />
+    <Project Path="tests/SessionFakeHelper/Cintra.Session.FakeHelper.csproj" />
+  </Folder>
   <Folder Name="/tests/Ai/">
     <Project Path="tests/Ai/MeetingCompanion.Ai.Tests.csproj" />
     <Project Path="tests/AiLive/MeetingCompanion.Ai.Live.csproj" />

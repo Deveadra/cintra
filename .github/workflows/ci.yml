@@ -19,12 +19,12 @@ jobs:
       - name: Inspect environment
         shell: pwsh
         run: ./scripts/check-environment.ps1
-      - name: Build managed solution including x64 WPF
-        shell: pwsh
-        run: ./scripts/build.ps1
       - name: Build native C++20 x64 Release and offline capture tests
         shell: pwsh
         run: ./scripts/native-build.ps1
+      - name: Build managed solution including x64 WPF and packaged native helper
+        shell: pwsh
+        run: ./scripts/build.ps1
       - name: Check formatting
         run: dotnet format MeetingCompanion.slnx --verify-no-changes --no-restore
       - name: Offline unit, contract and synthetic replay tests

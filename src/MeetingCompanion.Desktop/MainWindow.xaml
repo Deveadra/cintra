@@ -1,11 +1,38 @@
 <Window x:Class="MeetingCompanion.Desktop.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Meeting Companion" Width="640" Height="680" MinWidth="520" MinHeight="480">
-    <DockPanel Margin="24">
+        Title="Meeting Companion" Width="780" Height="960" MinWidth="640" MinHeight="640" Topmost="True">
+    <ScrollViewer VerticalScrollBarVisibility="Auto"><DockPanel Margin="24">
         <StackPanel DockPanel.Dock="Top">
             <TextBlock Text="Meeting Companion" FontSize="24" Margin="0,0,0,12" />
-            <TextBlock Text="Stopped — audio is not connected." />
+            <TextBlock x:Name="SessionStatus" Text="Stopped — select an application and microphone." TextWrapping="Wrap" />
+            <ComboBox x:Name="AppKind" SelectedIndex="0" Margin="0,8,0,4" AutomationProperties.Name="Call application type">
+                <ComboBoxItem Content="Zoom" /><ComboBoxItem Content="Microsoft Teams" /><ComboBoxItem Content="Manual process selection" />
+            </ComboBox>
+            <Button x:Name="DiscoverButton" Content="_Refresh audio sources" Click="Discover_Click" HorizontalAlignment="Left" Padding="12,4" />
+            <ComboBox x:Name="AppPicker" DisplayMemberPath="Label" Margin="0,8,0,4" AutomationProperties.Name="Incoming application process tree" />
+            <ComboBox x:Name="MicPicker" DisplayMemberPath="DisplayName" Margin="0,4,0,8" AutomationProperties.Name="Microphone endpoint" />
+            <TextBlock x:Name="SelectionStatus" Text="Refresh and explicitly choose a process and microphone. Idle render activity is not call evidence." TextWrapping="Wrap" />
+            <TextBlock x:Name="LastSelection" Margin="0,4" TextWrapping="Wrap" />
+            <ComboBox x:Name="ProviderPicker" SelectedIndex="0" Margin="0,4" AutomationProperties.Name="Transcription provider">
+                <ComboBoxItem Content="Capture only — transcription unavailable" />
+                <ComboBoxItem Content="TEST MODE — offline scripted provider, real native capture" />
+                <ComboBoxItem Content="OpenAI — real transcription (paid; explicit opt-in required)" />
+            </ComboBox>
+            <CheckBox x:Name="PaidApproval" Content="I approve paid API use for this session; audio will be sent to OpenAI." Margin="0,4" />
+            <WrapPanel Margin="0,8">
+                <Button x:Name="StartButton" Content="_Start" Click="Start_Click" Padding="14,5" />
+                <Button x:Name="PauseButton" Content="_Pause" Click="Pause_Click" Padding="14,5" Margin="8,0" IsEnabled="False" />
+                <Button x:Name="ResumeButton" Content="_Resume" Click="Resume_Click" Padding="14,5" IsEnabled="False" />
+                <Button x:Name="StopButton" Content="S_top" Click="Stop_Click" Padding="14,5" Margin="8,0" IsEnabled="False" />
+            </WrapPanel>
+            <TextBlock Text="YOU = microphone source (speaker echo may leak). REMOTE = mixed app audio; individual speakers are unknown." TextWrapping="Wrap" />
+            <TextBlock x:Name="LocalHealth" Text="YOU: capture unknown · STT unavailable" TextWrapping="Wrap" Margin="0,6,0,2" />
+            <ProgressBar x:Name="LocalLevel" Minimum="0" Maximum="1" Height="8" AutomationProperties.Name="Microphone peak level" />
+            <TextBlock x:Name="RemoteHealth" Text="REMOTE: capture unknown · STT unavailable" TextWrapping="Wrap" Margin="0,6,0,2" />
+            <ProgressBar x:Name="RemoteLevel" Minimum="0" Maximum="1" Height="8" AutomationProperties.Name="Incoming app peak level" />
+            <TextBox x:Name="Transcript" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Height="150" Margin="0,8" AutomationProperties.Name="Labeled live transcripts" />
+            <TextBlock x:Name="PipelineEvents" TextWrapping="Wrap" />
             <TextBlock Text="Manual snapshot · preview stays in memory · no upload" Margin="0,12,0,8" />
             <ComboBox x:Name="SourceMode" SelectedIndex="0" Margin="0,0,0,8" AutomationProperties.Name="Snapshot source">
                 <ComboBoxItem Content="Last active external window" />
@@ -29,6 +56,6 @@
             <TextBlock x:Name="HotkeyStatus" TextWrapping="Wrap" Margin="0,6,0,0" />
             <TextBlock x:Name="CaptureStatus" Text="Ready — choose a source and press Snapshot." TextWrapping="Wrap" Margin="0,12,0,12" />
         </StackPanel>
-        <Border BorderBrush="Gray" BorderThickness="1"><Image x:Name="Preview" Stretch="Uniform" AutomationProperties.Name="Snapshot preview" /></Border>
-    </DockPanel>
+        <Border BorderBrush="Gray" BorderThickness="1" Height="220"><Image x:Name="Preview" Stretch="Uniform" AutomationProperties.Name="Snapshot preview" /></Border>
+    </DockPanel></ScrollViewer>
 </Window>

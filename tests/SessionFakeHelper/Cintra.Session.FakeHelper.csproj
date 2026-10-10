@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net10.0-windows</TargetFramework><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/MeetingCompanion.Contracts/MeetingCompanion.Contracts.csproj" />
+    <Compile Include="../AudioFakeHelper/Program.cs" Link="Program.cs" />
+  </ItemGroup>
+</Project>

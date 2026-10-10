@@ -9,5 +9,9 @@
   <ItemGroup>
     <ProjectReference Include="../MeetingCompanion.Core/MeetingCompanion.Core.csproj" />
     <ProjectReference Include="../MeetingCompanion.Capture/MeetingCompanion.Capture.csproj" />
+    <ProjectReference Include="../MeetingCompanion.Session/MeetingCompanion.Session.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="../../artifacts/native/Cintra.Audio.Native.exe" Link="Cintra.Audio.Native.exe" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Condition="Exists('../../artifacts/native/Cintra.Audio.Native.exe')" />
   </ItemGroup>
 </Project>
