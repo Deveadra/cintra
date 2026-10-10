@@ -21,6 +21,12 @@
   <Folder Name="/tests/PlaybackHarness/">
     <Project Path="tests/PlaybackHarness/MeetingCompanion.PlaybackHarness.csproj" />
   </Folder>
+  <Folder Name="/tests/Stt/">
+    <Project Path="tests/Stt/MeetingCompanion.Stt.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/SttRehearsal/">
+    <Project Path="tests/SttRehearsal/Cintra.Stt.Rehearsal.csproj" />
+  </Folder>
   <Folder Name="/tests/Unit/">
     <Project Path="tests/Unit/MeetingCompanion.Unit.Tests.csproj" />
   </Folder>
