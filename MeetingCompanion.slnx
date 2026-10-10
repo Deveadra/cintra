@@ -36,4 +36,8 @@
   <Folder Name="/tests/Unit/">
     <Project Path="tests/Unit/MeetingCompanion.Unit.Tests.csproj" />
   </Folder>
+  <Folder Name="/tests/Platform/">
+    <Project Path="tests/Platform/MeetingCompanion.Platform.Tests.csproj" />
+    <Project Path="tests/PlatformWindows/Cintra.Platform.Inventory.csproj" />
+  </Folder>
 </Solution>
