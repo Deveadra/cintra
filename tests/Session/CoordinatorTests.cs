@@ -91,6 +91,7 @@ public sealed class CoordinatorTests
         await using var coordinator = fixture.Create();
         var choice = await fixture.Choose(coordinator);
         await coordinator.StartAsync(choice, ProviderMode.OfflineTest, default);
+        fixture.Time.Milliseconds = 2000;
         if (change == "recycled") fixture.Inventory.Snapshot = fixture.Inventory.Snapshot with
         { Processes = [fixture.Inventory.Snapshot.Processes[0] with { Identity = fixture.Identity with { CreationFileTime = 200 } }] };
         if (change == "renderer") fixture.Inventory.Snapshot = fixture.Inventory.Snapshot with
@@ -99,6 +100,12 @@ public sealed class CoordinatorTests
         await coordinator.PollAsync(default);
         await Until(() => fixture.Inventory.Leases[0].Disposals == 1);
         Assert.Equal(SessionState.Error, coordinator.View.State);
+        Assert.All(coordinator.View.Gaps, g =>
+        {
+            Assert.Equal(1000, g.Gap.CapturedStartMs);
+            Assert.Equal(2000, g.Gap.CapturedEndMs);
+            Assert.Equal(GapReason.SourceChanged, g.Gap.Reason);
+        });
         Assert.Empty(coordinator.View.Transcripts);
         Assert.Equal(1, fixture.Factory.Latest.Disposals);
         await Assert.ThrowsAsync<CallSourceSelectionException>(() => coordinator.StartAsync(choice, ProviderMode.OfflineTest, default));

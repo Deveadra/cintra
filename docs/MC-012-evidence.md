@@ -30,6 +30,8 @@ Meaningful negative paths: missing/replaced mic, unsupported platform, ambiguous
 
 The full-suite run exposed a cross-project fixture-name collision with the accepted Audio test's global helper assertion. It was corrected by compiling the same accepted fake-helper source into `Cintra.Session.FakeHelper.exe` for the Session tests. No existing test was weakened or modified. Startup cancellation and failure classification defects found in earlier regression runs were corrected before the final passing suite.
 
+The first PR CI run also exposed timing sensitivity in the unchanged legacy audio pause/resume fixture: it timestamps resumed frames at zero, so concurrent test-host load can exceed the existing two-second audio freshness bound. The push run passed on the same head while the PR run failed that assertion. The shared test script now uses MSBuild `-m:1` to serialize project-level execution for Windows subprocess/dispatcher fixtures. Assertions, production deadlines and intra-test concurrent pipelines are unchanged; failures are not retried or ignored. Source-loss uncertainty is conservatively marked from the last healthy capture and last confirmed process-tree validation, with explicit interval assertions.
+
 ## Not verified and integration gaps
 
 | Environment / scenario | OS / hardware / app version | Evidence in this change | Status |

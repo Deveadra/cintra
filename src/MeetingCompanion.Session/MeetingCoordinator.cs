@@ -38,6 +38,8 @@ public sealed class MeetingCoordinator : IAsyncDisposable
     private string? lastSource;
     private readonly Dictionary<Component, ComponentHealth> health = [];
     private readonly Dictionary<Component, ComponentHealth> providerReports = [];
+    private readonly Dictionary<AudioStreamId, long> lastGoodCapture = [];
+    private long lastSourceValidatedAtMs;
     private readonly Queue<AudioGapEvent> failureGaps = new();
     private SourceChangedEvent? failureSource;
     private double localPeak;
@@ -130,6 +132,7 @@ public sealed class MeetingCoordinator : IAsyncDisposable
                 {
                     sessionId = Guid.NewGuid();
                     clock = time.CreateClock();
+                    lastSourceValidatedAtMs = Now;
                     store = new RollingConversationStore(sessionId.Value, clock);
                     lastSource = $"{selected.Candidate.AppDisplayName} · PID {selected.Candidate.ProcessId} · {selected.Microphone.DisplayName}";
                 }
@@ -156,6 +159,7 @@ public sealed class MeetingCoordinator : IAsyncDisposable
             ready = NewCompletion();
             health.Clear();
             providerReports.Clear();
+            lastGoodCapture.Clear();
             active ??= CancellationTokenSource.CreateLinkedTokenSource(token);
             state = SessionState.Starting;
             detail = provider switch
@@ -231,6 +235,8 @@ public sealed class MeetingCoordinator : IAsyncDisposable
             {
                 case CaptureHealth h:
                     health[h.Health.Component] = h.Health;
+                    if (h.Health.Status is HealthStatus.Healthy or HealthStatus.Silence or HealthStatus.ZeroLevel && h.Health.ObservedAtMs <= Now)
+                        lastGoodCapture[h.StreamId] = h.Health.ObservedAtMs;
                     if (h.StreamId == AudioStreamId.LocalMic) localPeak = h.Peak; else remotePeak = h.Peak;
                     if (h.Health.Status is HealthStatus.NoDevice or HealthStatus.WrongProcess or HealthStatus.PermissionDenied or HealthStatus.Disconnected or HealthStatus.Failed)
                         Fault(epoch, h.Health.DiagnosticCode ?? "capture_failed",
@@ -283,7 +289,8 @@ public sealed class MeetingCoordinator : IAsyncDisposable
             if (sessionId is { } id && clock is not null)
                 foreach (var stream in new[] { AudioStreamId.LocalMic, AudioStreamId.RemoteApp })
                 {
-                    long last = health.GetValueOrDefault(stream == AudioStreamId.LocalMic ? Component.LocalCapture : Component.RemoteCapture)?.ObservedAtMs ?? Now;
+                    long last = lastGoodCapture.GetValueOrDefault(stream, Now);
+                    if (reason == GapReason.SourceChanged) last = Math.Min(last, lastSourceValidatedAtMs);
                     failureGaps.Enqueue(new()
                     {
                         SchemaVersion = 1,
@@ -333,6 +340,7 @@ public sealed class MeetingCoordinator : IAsyncDisposable
             {
                 if (epoch != generation || lease is null) return;
                 if (!validity.CanSelect) { Fault(epoch, validity.DiagnosticCode, GapReason.SourceChanged); return; }
+                lastSourceValidatedAtMs = Now;
                 if (state == SessionState.Paused) return;
                 foreach (var h in runtime?.SampleTransportHealth(Now) ?? [])
                     if (!health.TryGetValue(h.Component, out var previous) || previous.Status is not (HealthStatus.Failed or HealthStatus.PermissionDenied))
@@ -396,6 +404,7 @@ public sealed class MeetingCoordinator : IAsyncDisposable
             if (state != SessionState.Paused) throw new InvalidOperationException("Session is not paused.");
             var validity = await adapters[choice!.Kind].ValidateAsync(choice.Candidate, token).ConfigureAwait(false);
             if (!validity.CanSelect) throw new CallSourceSelectionException(validity.DiagnosticCode);
+            lock (gate) lastSourceValidatedAtMs = Now;
             await StartRuntimeAsync(token).ConfigureAwait(false);
         }
         catch { await StopCoreAsync("Resume failed — select sources again.", true).ConfigureAwait(false); throw; }
