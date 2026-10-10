@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net10.0-windows</TargetFramework></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../MeetingCompanion.Audio/MeetingCompanion.Audio.csproj" />
+    <ProjectReference Include="../MeetingCompanion.Core/MeetingCompanion.Core.csproj" />
+    <ProjectReference Include="../MeetingCompanion.Platform/MeetingCompanion.Platform.csproj" />
+    <ProjectReference Include="../MeetingCompanion.Stt/MeetingCompanion.Stt.csproj" />
+  </ItemGroup>
+</Project>
