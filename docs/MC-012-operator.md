@@ -60,4 +60,4 @@ The accepted short paid rehearsal remains separately gated by `--approve-paid-ap
 
 ## Integration boundaries
 
-MC-009 consumes the narrow snapshot handoff later; no vision/reasoning integration is implemented here. Actual Zoom/Teams labeled-speech meeting/direct-call acceptance, physical device disconnect/reconnect, speaker echo, multi-monitor hotkey behavior and live provider quality remain separately unverified. TEST MODE and subprocess fixtures do not establish any of those claims. Release gates remain in the existing platform matrix and the MC-012 evidence file.
+The accepted MC-009 library is preserved from newer main; consuming this shell's snapshot handoff remains a separate integration step. No vision/reasoning calls are wired into the shell here. Actual Zoom/Teams labeled-speech meeting/direct-call acceptance, physical device disconnect/reconnect, speaker echo, multi-monitor hotkey behavior and live provider quality remain separately unverified. TEST MODE and subprocess fixtures do not establish any of those claims. Release gates remain in the existing platform matrix and the MC-012 evidence file.

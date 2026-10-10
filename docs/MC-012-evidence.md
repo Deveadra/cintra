@@ -1,6 +1,6 @@
 # MC-012 implementation and acceptance evidence
 
-Date: 2026-10-10. Branch: `orion/mc012-meeting-coordinator`. Base: accepted `Deveadra/cintra` main `e66482adf6e1f21a57da0f1b6183a729e9194ec2`. GitHub issue: #9.
+Date: 2026-10-10. Branch: `orion/mc012-meeting-coordinator`. Initial base: accepted `Deveadra/cintra` main `e66482adf6e1f21a57da0f1b6183a729e9194ec2`. Updated by merging accepted main `5aecafca6644a58c682945fcc2a2cf578d19d2e2` (MC-009), preserving that implementation and resolving the solution's additive project entries. GitHub issue: #9.
 
 ## Done
 
@@ -17,12 +17,12 @@ Environment: Windows build 26200 x64; .NET SDK 10.0.401; Windows SDK 10.0.26100.
 | `./scripts/check-environment.ps1` | Windows x64, SDK/runtime and Windows SDK available |
 | `./scripts/native-build.ps1` | C++20 x64 Release build; native CTest **2 passed, 0 failed** |
 | `./scripts/build.ps1` | Release build **0 warnings, 0 errors** |
-| `./scripts/test.ps1` | **172 passed, 0 failed, 0 skipped** across seven test assemblies before updating with newer main; synthetic replay `result: PASS` |
+| `./scripts/test.ps1` | **222 passed, 0 failed, 0 skipped** across eight test assemblies after updating with newer main; synthetic replay `result: PASS` |
 | `dotnet format MeetingCompanion.slnx --verify-no-changes --no-restore` | Passed, exit **0**, after the final build/tests |
 | `dotnet run --project tests/PlaybackHarness -c Release --no-build --no-restore -- --export-schemas docs/contracts` followed by `git diff --exit-code -- docs/contracts` | Passed, exit **0**; no frozen-schema drift |
 | `dotnet run --project tests/SessionWindows -c Release --no-build --no-restore` without acknowledgments | Refused with `SMOKE_NOT_STARTED`, exit **2**, before capture/provider work |
 
-Full-suite totals before the newer main integration: Unit **39/39**, Contract **27/27**, Audio **11/11**, Platform **31/31**, Capture **18/18**, STT **16/16**, new Session **30/30**. TRX files are local ignored artifacts under `TestResults`; CI uploads its own TRX artifacts. The desktop output contains the built `Cintra.Audio.Native.exe` (140800 bytes in this local build).
+Full-suite totals after integrating newer main: Unit **39/39**, Contract **27/27**, Audio **11/11**, Platform **31/31**, Capture **18/18**, STT **16/16**, AI **50/50**, new Session **30/30**. TRX files are local ignored artifacts under `TestResults`; CI uploads its own TRX artifacts. The desktop output contains the built `Cintra.Audio.Native.exe` (140800 bytes in this local build).
 
 The Session suite exercises real coordinator side effects through fake inventory, clock, capture and provider seams, plus the actual DualStreamTranscriber/VAD/provider parser, actual NativeAudioCaptureSession named-pipe subprocess boundary with synthetic helper input, and actual WPF controls/event handlers on an STA dispatcher. No hardware microphone, application audio or paid provider was used by those tests.
 

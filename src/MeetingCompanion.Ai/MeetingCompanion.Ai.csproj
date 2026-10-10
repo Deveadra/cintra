@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="../MeetingCompanion.Contracts/MeetingCompanion.Contracts.csproj" />
+    <ProjectReference Include="../MeetingCompanion.Core/MeetingCompanion.Core.csproj" />
   </ItemGroup>
 </Project>

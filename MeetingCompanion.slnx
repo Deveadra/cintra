@@ -16,6 +16,10 @@
     <Project Path="tests/SessionWindows/MeetingCompanion.Session.Windows.csproj" />
     <Project Path="tests/SessionFakeHelper/Cintra.Session.FakeHelper.csproj" />
   </Folder>
+  <Folder Name="/tests/Ai/">
+    <Project Path="tests/Ai/MeetingCompanion.Ai.Tests.csproj" />
+    <Project Path="tests/AiLive/MeetingCompanion.Ai.Live.csproj" />
+  </Folder>
   <Folder Name="/tests/Audio/">
     <Project Path="tests/AudioIntegration/MeetingCompanion.Audio.Tests.csproj" />
     <Project Path="tests/AudioFakeHelper/Cintra.Audio.FakeHelper.csproj" />
